@@ -1,6 +1,6 @@
 const Blogs = () => {
   return (
-    <div>
+    <div className="mt-[85px]">
       <p>Blogs</p>
     </div>
   );
