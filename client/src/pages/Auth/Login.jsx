@@ -15,7 +15,7 @@ const Login = () => {
           <h2 className="text-2xl sm:text-3xl md:text-4xl mb-2 font-bold text-center">
             Welcome Back
           </h2>
-          <p className="md:w-2/3 mx-auto text-center text-gray-800 mb-6 text-sm px-2 sm:px-4 md:px-6 lg:px-0">
+          <p className="md:w-3/5 mx-auto text-center text-gray-800 mb-6 text-sm px-2 sm:px-4 md:px-6 lg:px-0">
             Welcome back to Smart Sight System. Log in to continue your
             personalized experience and services.
           </p>
@@ -28,7 +28,7 @@ const Login = () => {
                   type="email"
                   name="email"
                   placeholder="Email"
-                  className="border px-4 py-2 w-full rounded placeholder:text-xs"
+                  className="border px-4 py-2 w-full rounded placeholder:text-xs focus:outline-none "
                 />
               </div>
               <div className="mt-2 relative">
@@ -38,7 +38,7 @@ const Login = () => {
                   type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="Password"
-                  className="border px-4 py-2 w-full rounded placeholder:text-xs"
+                  className="border px-4 py-2 w-full rounded placeholder:text-xs focus:outline-none "
                 />
                 <span
                   onClick={() => setShowPassword(!showPassword)}
@@ -72,16 +72,16 @@ const Login = () => {
             <span className="border w-full"></span>
           </div>
           <div className="w-4/5 sm:w-3/5 md:w-1/2 mx-auto">
-            <button className="w-full border p-2 rounded flex justify-center items-center gap-2  hover:bg-blue-600 hover:text-white transition-colors duration-300 text-sm">
-              <FaGoogle className="text-xl" />
+            <button className="w-full border py-3 rounded flex justify-center items-center gap-2  hover:bg-green-600 hover:text-white transition-colors duration-300 text-xs uppercase">
+              <FaGoogle className="text-base" />
               Google
             </button>
-            <button className="w-full border p-2 rounded flex justify-center items-center gap-2 hover:bg-blue-600 hover:text-white transition-colors duration-300 text-sm mt-2">
-              <FaFacebook className="text-xl" />
+            <button className="w-full border py-3 rounded flex justify-center items-center gap-2 hover:bg-blue-600 hover:text-white transition-colors duration-300 text-xs uppercase mt-2">
+              <FaFacebook className="text-base" />
               Facebook
             </button>
           </div>
-          <p className="mt-10 text-sm text-center">
+          <p className="mt-5 text-xs text-center">
             Need an account ?{" "}
             <Link to="/register" className="text-blue-600 font-semibold">
               Create Account
