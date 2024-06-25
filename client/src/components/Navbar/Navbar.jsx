@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import Container from "../../components/ui/Container";
-import logo from "./../../assets/logo.png";
+import logo from "./../../assets/logo-white.png";
 import { useEffect, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import Drawer from "./Drawer";
@@ -12,7 +12,7 @@ const Navbar = () => {
 
   useEffect(() => {
     if (location.pathname === "/") {
-      setNavbarBackgroundColor("bg-yellow-200/50");
+      setNavbarBackgroundColor("text-white");
     } else {
       setNavbarBackgroundColor("bg-white shadow");
     }
@@ -26,7 +26,7 @@ const Navbar = () => {
 
   return (
     <div
-      className={`${navbarBackgroundColor} font-roboto text-xs font-semibold fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ]`}
+      className={`${navbarBackgroundColor} font-roboto text-xs font-semibold absolute top-0 left-0 right-0 z-50 transition-colors duration-300 ]`}
     >
       <Container>
         <div className="flex items-center justify-between py-4 ">
@@ -45,7 +45,7 @@ const Navbar = () => {
                 <NavLink
                   to={route.path}
                   className={({ isActive }) =>
-                    isActive ? "text-blue-500" : "text-black"
+                    isActive ? "text-blue-500" : ""
                   }
                 >
                   {route.name}

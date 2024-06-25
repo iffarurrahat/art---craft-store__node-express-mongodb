@@ -1,7 +1,10 @@
+import Banner from "../../components/Banner/Banner";
+
 const Home = () => {
   return (
-    <div className="mt-[85px]">
-      <p>Home Page</p>
+    <div>
+      <Banner />
+      <p className="mt-[100vh]">home</p>
     </div>
   );
 };
