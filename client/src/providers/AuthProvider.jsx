@@ -1,4 +1,5 @@
 import {
+  FacebookAuthProvider,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -13,6 +14,7 @@ import auth from "../firebase/firebase.config";
 
 export const AuthContext = createContext(null);
 const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -45,6 +47,12 @@ const AuthProvider = ({ children }) => {
     return signInWithPopup(auth, googleProvider);
   };
 
+  //facebook
+  const loginWithFacebook = () => {
+    setLoading(true);
+    return signInWithPopup(auth, facebookProvider);
+  };
+
   // logout
   const logOut = () => {
     setLoading(true);
@@ -69,6 +77,7 @@ const AuthProvider = ({ children }) => {
     userLogin,
     logOut,
     loginWithGoogle,
+    loginWithFacebook,
   };
 
   return (

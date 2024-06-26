@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import { RiErrorWarningFill } from "react-icons/ri";
 
 const Login = () => {
-  const { userLogin, loginWithGoogle } = useAuth();
+  const { userLogin, loginWithGoogle, loginWithFacebook } = useAuth();
   const [loginError, setLoginError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -56,9 +56,35 @@ const Login = () => {
           // navigate user
           // navigate(location?.state || "/");
         }
-        // else {
-        //   toast.loading("Please verify your email address");
-        // }
+      })
+      .catch((error) => {
+        const errMessage = error.message;
+        if (errMessage === "Firebase: Error (auth/popup-closed-by-user).") {
+          setLoginError("Sign in cancelled. Please try again.");
+        } else if (errMessage === "Firebase: Error (auth/internal-error).") {
+          setLoginError("Please connect your internet");
+        } else if (
+          errMessage ===
+          "Firebase: IdP denied access. This usually happens when user refuses to grant permission. (auth/user-cancelled)."
+        ) {
+          setLoginError("Permission denied, Grant access to signin");
+        } else {
+          setLoginError(errMessage);
+        }
+      });
+  };
+
+  // signin with facebook
+  const handleLoginWithFacebook = () => {
+    loginWithFacebook()
+      .then((result) => {
+        const loggedUser = result.user;
+        if (loggedUser.emailVerified) {
+          toast.success("Login Successfully");
+
+          // navigate user
+          // navigate(location?.state || "/");
+        }
       })
       .catch((error) => {
         const errMessage = error.message;
@@ -147,7 +173,10 @@ const Login = () => {
               <FaGoogle className="text-base" />
               Google
             </button>
-            <button className="w-full border py-3 rounded flex justify-center items-center gap-2 hover:bg-blue-600 hover:text-white transition-colors duration-300 text-xs uppercase mt-2">
+            <button
+              onClick={handleLoginWithFacebook}
+              className="w-full border py-3 rounded flex justify-center items-center gap-2 hover:bg-blue-600 hover:text-white transition-colors duration-300 text-xs uppercase mt-2"
+            >
               <FaFacebook className="text-base" />
               Facebook
             </button>
