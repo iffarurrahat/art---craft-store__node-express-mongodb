@@ -22,18 +22,23 @@ const Drawer = ({ isOpen, onClose, routes }) => {
         <div className="flex items-center justify-between p-4">
           <img src={logo} alt="logo" className="h-8" />
           <div className="text-2xl" onClick={onClose}>
-            <AiOutlineClose />
+            <AiOutlineClose className="text-black cursor-pointer" />
           </div>
         </div>
         <ul className="mt-8">
           {routes.map((route) => (
-            <li key={route.id} className="p-4 border-b border-gray-200">
+            <li
+              key={route.id}
+              className="p-4 border-b border-gray-200 text-center"
+            >
               <NavLink
                 to={route.path}
                 className={({ isActive }) =>
-                  isActive ? "text-blue-500" : "text-black"
+                  isActive && route.name !== "Logout"
+                    ? "text-blue-500"
+                    : "text-black"
                 }
-                onClick={onClose}
+                onClick={route.onClick ? route.onClick : null}
               >
                 {route.name}
               </NavLink>

@@ -1,10 +1,56 @@
 import { useState } from "react";
-import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { Link } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
+import toast from "react-hot-toast";
+import { RiErrorWarningFill } from "react-icons/ri";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 const Register = () => {
+  const { createUser, updatedUserProfile } = useAuth();
   const [registerError, setRegisterError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const name = form.name.value;
+    const photo = form.photo.value;
+    const email = form.email.value;
+    const password = form.password.value;
+
+    // verify some authentication
+    if (password.label < 6) {
+      return setRegisterError("Minimum 6 characters for password");
+    } else if (!/[A-Z]/.test(password)) {
+      return setRegisterError("Include at least one uppercase character");
+    } else if (!/[a-z]/.test(password)) {
+      return setRegisterError("Include at least one lowercase character");
+    }
+    //reset error
+    setRegisterError("");
+
+    createUser(email, password)
+      .then((result) => {
+        updatedUserProfile(name, photo);
+        const loggedUser = result.user;
+        if (loggedUser) {
+          toast.success("Successfully Create Account");
+        }
+        form.reset();
+      })
+      .catch((error) => {
+        const errMessage = error.message;
+        if (errMessage === "Firebase: Error (auth/email-already-in-use).") {
+          setRegisterError("Already have an account please login");
+        } else if (
+          errMessage === "Firebase: Error (auth/network-request-failed)."
+        ) {
+          setRegisterError("Please connect your internet");
+        } else {
+          toast.error("Something is wrong try later");
+        }
+      });
+  };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center px-8 sm:px-10">
@@ -16,7 +62,7 @@ const Register = () => {
           welcome to the smart sight system for well deports register as a
           member to experience
         </p>
-        <form>
+        <form onSubmit={handleRegister}>
           <div>
             <label className="mb-1 text-sm">Name</label> <br />
             <input
@@ -72,7 +118,10 @@ const Register = () => {
           </div>
         </form>
         {registerError && (
-          <p className="text-red-600 text-sm mt-1">{registerError}</p>
+          <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+            <RiErrorWarningFill />
+            {registerError}
+          </p>
         )}
         <p className="mt-5 text-xs">
           Already a member ?{" "}

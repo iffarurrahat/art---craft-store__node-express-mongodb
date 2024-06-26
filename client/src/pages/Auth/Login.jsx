@@ -3,10 +3,41 @@ import Container from "../../components/ui/Container";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import useAuth from "../../hooks/useAuth";
+import toast from "react-hot-toast";
+import { RiErrorWarningFill } from "react-icons/ri";
 
 const Login = () => {
+  const { userLogin } = useAuth();
   const [loginError, setLoginError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const email = form.email.value;
+    const password = form.password.value;
+
+    userLogin(email, password)
+      .then((result) => {
+        const loggedUser = result.user;
+        if (loggedUser) {
+          toast.success("Login Successfully");
+        }
+      })
+      .catch((error) => {
+        const errMessage = error.message;
+        if (errMessage === "Firebase: Error (auth/invalid-credential).") {
+          setLoginError("Email or Password might be wrong");
+        } else if (
+          errMessage === "Firebase: Error (auth/network-request-failed)."
+        ) {
+          setLoginError("Please connect your internet");
+        } else {
+          setLoginError(error.message);
+        }
+      });
+  };
 
   return (
     <Container>
@@ -20,7 +51,7 @@ const Login = () => {
             personalized experience and services.
           </p>
           <div className="flex justify-center w-full mx-auto">
-            <form className="w-4/5 sm:w-3/5 md:w-1/2">
+            <form onSubmit={handleLogin} className="w-4/5 sm:w-3/5 md:w-1/2">
               <div>
                 <label className="mb-1 text-sm">Email</label> <br />
                 <input
@@ -56,14 +87,13 @@ const Login = () => {
                   className="bg-blue-600 text-white text-sm rounded py-3 w-full cursor-pointer placeholder:text-2xl"
                 />
               </div>
+              {loginError && (
+                <p className="text-red-600 mt-1 text-sm flex items-center gap-1">
+                  <RiErrorWarningFill />
+                  {loginError}
+                </p>
+              )}
             </form>
-            {loginError && (
-              <p className="text-red-600 mt-2 text-sm">
-                {loginError === "Firebase: Error (auth/invalid-credential)."
-                  ? "Email or password might be wrong"
-                  : loginError}
-              </p>
-            )}
           </div>
 
           <div className="flex items-center mx-auto gap-3 my-5 w-4/5 sm:w-3/5 md:w-1/2">

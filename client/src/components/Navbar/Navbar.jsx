@@ -4,8 +4,11 @@ import logo from "./../../assets/logo-white.png";
 import { useEffect, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import Drawer from "./Drawer";
+import useAuth from "../../hooks/useAuth";
+import toast from "react-hot-toast";
 
 const Navbar = () => {
+  const { user, logOut } = useAuth();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [navbarBackgroundColor, setNavbarBackgroundColor] = useState("");
   const location = useLocation();
@@ -18,11 +21,35 @@ const Navbar = () => {
     }
   }, [location.pathname]);
 
+  // logout
+  const handleSignOut = () => {
+    logOut()
+      .then(() => {
+        toast.success("Logout Successful");
+        setDrawerOpen(false); // Close drawer on logout
+      })
+      .catch((error) => {
+        if (error.message) {
+          toast.error("Something wrong");
+        }
+      });
+  };
+
   const routes = [
     { id: 1, path: "/", name: "Home" },
-    { id: 4, path: "/blogs", name: "Blogs" },
-    { id: 2, path: "/register", name: "Register" },
+    { id: 2, path: "/blogs", name: "Blogs" },
   ];
+  // Conditional rendering of login
+  if (user) {
+    routes.push({
+      id: 3,
+      path: "",
+      name: "Logout",
+      onClick: handleSignOut,
+    });
+  } else {
+    routes.push({ id: 4, path: "/login", name: "Login" });
+  }
 
   return (
     <div
@@ -45,8 +72,9 @@ const Navbar = () => {
                 <NavLink
                   to={route.path}
                   className={({ isActive }) =>
-                    isActive ? "text-blue-500" : ""
+                    isActive && route.name !== "Logout" ? "text-blue-500" : ""
                   }
+                  onClick={route.onClick ? route.onClick : null}
                 >
                   {route.name}
                 </NavLink>
@@ -60,9 +88,14 @@ const Navbar = () => {
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         routes={routes}
+        handleSignOut={handleSignOut}
       />
     </div>
   );
 };
 
 export default Navbar;
+
+/*
+Firebase: Error (auth/network-request-failed). === connect your internet 
+*/
