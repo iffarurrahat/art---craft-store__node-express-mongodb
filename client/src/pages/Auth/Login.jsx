@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import { RiErrorWarningFill } from "react-icons/ri";
 
 const Login = () => {
-  const { userLogin } = useAuth();
+  const { userLogin, loginWithGoogle } = useAuth();
   const [loginError, setLoginError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -17,6 +17,9 @@ const Login = () => {
     const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
+
+    //reset error
+    setLoginError("");
 
     userLogin(email, password)
       .then((result) => {
@@ -35,6 +38,41 @@ const Login = () => {
           setLoginError("Please connect your internet");
         } else {
           setLoginError(error.message);
+        }
+      });
+  };
+
+  //signIn with google
+  const handleLoginWithGoogle = () => {
+    //reset error
+    setLoginError("");
+
+    loginWithGoogle()
+      .then((result) => {
+        const loggedUser = result.user;
+        if (loggedUser.emailVerified) {
+          toast.success("Login Successfully");
+
+          // navigate user
+          // navigate(location?.state || "/");
+        }
+        // else {
+        //   toast.loading("Please verify your email address");
+        // }
+      })
+      .catch((error) => {
+        const errMessage = error.message;
+        if (errMessage === "Firebase: Error (auth/popup-closed-by-user).") {
+          setLoginError("Sign in cancelled. Please try again.");
+        } else if (errMessage === "Firebase: Error (auth/internal-error).") {
+          setLoginError("Please connect your internet");
+        } else if (
+          errMessage ===
+          "Firebase: IdP denied access. This usually happens when user refuses to grant permission. (auth/user-cancelled)."
+        ) {
+          setLoginError("Permission denied, Grant access to signin");
+        } else {
+          setLoginError(errMessage);
         }
       });
   };
@@ -102,7 +140,10 @@ const Login = () => {
             <span className="border w-full"></span>
           </div>
           <div className="w-4/5 sm:w-3/5 md:w-1/2 mx-auto">
-            <button className="w-full border py-3 rounded flex justify-center items-center gap-2  hover:bg-green-600 hover:text-white transition-colors duration-300 text-xs uppercase">
+            <button
+              onClick={handleLoginWithGoogle}
+              className="w-full border py-3 rounded flex justify-center items-center gap-2  hover:bg-green-600 hover:text-white transition-colors duration-300 text-xs uppercase"
+            >
               <FaGoogle className="text-base" />
               Google
             </button>
@@ -124,3 +165,5 @@ const Login = () => {
 };
 
 export default Login;
+
+// Firebase: Error (auth/popup-closed-by-user).

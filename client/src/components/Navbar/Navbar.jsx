@@ -17,7 +17,7 @@ const Navbar = () => {
     if (location.pathname === "/") {
       setNavbarBackgroundColor("text-white");
     } else {
-      setNavbarBackgroundColor("bg-white shadow");
+      setNavbarBackgroundColor("shadow");
     }
   }, [location.pathname]);
 

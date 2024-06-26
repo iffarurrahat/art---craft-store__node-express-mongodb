@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 import { AiOutlineClose } from "react-icons/ai";
 import logo from "./../../assets/logo.png";
@@ -50,4 +51,9 @@ const Drawer = ({ isOpen, onClose, routes }) => {
   );
 };
 
+Drawer.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  routes: PropTypes.array.isRequired,
+};
 export default Drawer;
