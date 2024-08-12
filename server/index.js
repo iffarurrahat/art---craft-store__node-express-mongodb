@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -23,106 +23,109 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
-    // <-!----------------------------------------------->
+    const craftsCollection = client.db("artAndCraft").collection("crafts");
+    const subCraftsCollection = client
+      .db("artAndCraft")
+      .collection("subCrafts");
 
-    const coffeeCollection = client.db("coffeeDBThree").collection("coffee");
-    const userCollection = client.db("coffeeDBThree").collection("user");
-
-    app.get("/coffee", async (req, res) => {
-      const cursor = coffeeCollection.find();
+    app.get("/crafts", async (req, res) => {
+      const cursor = craftsCollection.find(
+        {},
+        {
+          projection: {
+            _id: 1,
+            image: 1,
+            item_name: 1,
+            price: 1,
+            short_description: 1,
+            rating: 1,
+          },
+        }
+      );
       const result = await cursor.toArray();
       res.send(result);
     });
 
-    app.get("/coffee/:id", async (req, res) => {
+    app.get("/crafts/:id", async (req, res) => {
       const id = req.params.id;
-      // console.log(id);
-
       const query = { _id: new ObjectId(id) };
-      const result = await coffeeCollection.findOne(query);
+      const result = await craftsCollection.findOne(query);
       res.send(result);
     });
 
-    app.post("/coffee", async (req, res) => {
-      const newCoffee = req.body;
-      // console.log(newCoffee);
-
-      const result = await coffeeCollection.insertOne(newCoffee);
+    app.get("/crafts/email/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { "postUser.email": email };
+      const result = await craftsCollection.find(query).toArray();
       res.send(result);
     });
 
-    app.put("/coffee/:id", async (req, res) => {
+    app.get("/subCrafts", async (req, res) => {
+      const cursor = subCraftsCollection.find(
+        {},
+        {
+          projection: {
+            _id: 1,
+            image: 1,
+            item_name: 1,
+            price: 1,
+            short_description: 1,
+            rating: 1,
+          },
+        }
+      );
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/subCrafts/:id", async (req, res) => {
       const id = req.params.id;
-      // console.log(id);
+      const query = { _id: new ObjectId(id) };
+      const result = await subCraftsCollection.findOne(query);
+      res.send(result);
+    });
 
+    app.post("/crafts", async (req, res) => {
+      const newCraft = req.body;
+      const result = await craftsCollection.insertOne(newCraft);
+      res.send(result);
+    });
+
+    app.put("/crafts/:id", async (req, res) => {
+      const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const option = { upsert: true };
-      const updatedCoffee = req.body;
-      const coffee = {
+
+      const updatedCraft = req.body;
+      const craft = {
         $set: {
-          name: updatedCoffee.name,
-          quantity: updatedCoffee.quantity,
-          supplier: updatedCoffee.supplier,
-          taste: updatedCoffee.taste,
-          category: updatedCoffee.category,
-          details: updatedCoffee.details,
-          photo: updatedCoffee.photo,
+          item_name: updatedCraft.item_name,
+          subcategory_Name: updatedCraft.subcategory_Name,
+          processing_time: updatedCraft.processing_time,
+          stockStatus: updatedCraft.stockStatus,
+          price: updatedCraft.price,
+          rating: updatedCraft.rating,
+          customization: updatedCraft.customization,
+          image: updatedCraft.image,
+          short_description: updatedCraft.short_description,
+          making_details: updatedCraft.making_details,
         },
       };
-      const result = await coffeeCollection.updateOne(filter, coffee, option);
+      const result = await craftsCollection.updateOne(filter, craft, option);
       res.send(result);
     });
 
-    app.delete("/coffee/:id", async (req, res) => {
+    app.delete("/crafts/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      const result = await coffeeCollection.deleteOne(query);
+      const result = await craftsCollection.deleteOne(query);
       res.send(result);
     });
-
-    // <--!---- user related API --->
-    app.get("/user", async (req, res) => {
-      const cursor = userCollection.find();
-      const result = await cursor.toArray();
-      res.send(result);
-    });
-
-    app.post("/user", async (req, res) => {
-      const user = req.body;
-      // console.log(user);
-
-      const result = await userCollection.insertOne(user);
-      res.send(result);
-    });
-
-    app.delete("/user/:id", async (req, res) => {
-      const id = req.params.id;
-      // console.log(id);
-
-      const query = { _id: new ObjectId(id) };
-      const result = await userCollection.deleteOne(query);
-      res.send(result);
-    });
-
-    app.patch("/user", async (req, res) => {
-      const user = req.body;
-      const filter = { email: user.email };
-      const updateDoc = {
-        $set: {
-          lastLoggedAt: user.lastLoggedAt,
-        },
-      };
-
-      const result = await userCollection.updateOne(filter, updateDoc);
-      res.send(result);
-    });
-
-    // <-!----------------------------------------------->
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
